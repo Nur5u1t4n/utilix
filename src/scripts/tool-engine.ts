@@ -12,6 +12,7 @@ import {
 } from "./tools/converters";
 
 import { convertBase } from "./tools/number-base";
+import { formatJson } from "./tools/json-formatter";
 
 type Field = {
   name: string;
@@ -428,13 +429,15 @@ function init(root: HTMLElement) {
           result(convertBase(value, from, to));
           break;
         }
+
         case "json-formatter": {
-          const obj = JSON.parse(get("text"));
-          result(
-            get("mode") === "pretty"
-              ? JSON.stringify(obj, null, 2)
-              : JSON.stringify(obj),
-          );
+          const mode = get("mode");
+
+          if (mode !== "pretty" && mode !== "minify") {
+            throw new Error("Выберите режим обработки JSON.");
+          }
+
+          result(formatJson(get("text"), mode));
           break;
         }
 
