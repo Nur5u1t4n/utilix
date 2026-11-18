@@ -1,3 +1,9 @@
+import {
+  calculatePercentage,
+  calculateDiscount,
+  calculateMarkupMargin,
+} from "./tools/calculations";
+
 type Field = {
   name: string;
   label: string;
@@ -262,44 +268,68 @@ function init(root: HTMLElement) {
     };
     kindSelect.addEventListener("change", updateUnits);
   }
+
   const get = (name: string) => (new FormData(f).get(name) || "").toString();
+
   const num = (name: string) => Number(get(name));
+
+  const requiredNum = (name: string, label: string) => {
+    const raw = get(name).trim();
+
+    if (!raw) {
+      throw Error(`Заполните поле «${label}».`);
+    }
+
+    const value = Number(raw);
+
+    if (!Number.isFinite(value)) {
+      throw Error(`Поле «${label}» должно содержать корректное число.`);
+    }
+
+    return value;
+  };
+
   const fmt = (n: number) =>
     new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 8 }).format(n);
   const run = () => {
     try {
       switch (id) {
         case "percentage": {
-          const n = num("number"),
-            p = num("percent");
-          if (!Number.isFinite(n + p)) throw Error("Введите корректные числа.");
-          result(`${fmt(p)}% от ${fmt(n)} = ${fmt((n * p) / 100)}`);
+          const n = requiredNum("number", "Число");
+          const p = requiredNum("percent", "Процент");
+
+          const { value } = calculatePercentage(n, p);
+
+          result(`${fmt(p)}% от ${fmt(n)} = ${fmt(value)}`);
           break;
         }
+
         case "discount": {
-          const p = num("price"),
-            d = num("discount");
-          if (p < 0 || d < 0 || d > 100)
-            throw Error(
-              "Цена должна быть неотрицательной, скидка — от 0 до 100%.",
-            );
+          const p = requiredNum("price", "Исходная цена");
+          const d = requiredNum("discount", "Скидка");
+
+          const { discountAmount, finalPrice } = calculateDiscount(p, d);
+
           result(
-            `Сумма скидки: ${fmt((p * d) / 100)}\nИтоговая цена: ${fmt(p * (1 - d / 100))}`,
+            `Исходная цена: ${fmt(p)}\nСкидка: ${fmt(d)}%\nСумма скидки: ${fmt(discountAmount)}\nИтоговая цена: ${fmt(finalPrice)}`,
           );
+
           break;
         }
+
         case "markup-margin": {
-          const c = num("cost"),
-            s = num("sale");
-          if (c <= 0 || s < 0)
-            throw Error(
-              "Себестоимость должна быть больше нуля, цена — неотрицательной.",
-            );
+          const c = requiredNum("cost", "Себестоимость");
+          const s = requiredNum("sale", "Цена продажи");
+
+          const { profit, markup, margin } = calculateMarkupMargin(c, s);
+
           result(
-            `Наценка: ${fmt(((s - c) / c) * 100)}%\nМаржа: ${fmt(s === 0 ? 0 : ((s - c) / s) * 100)}%\nВаловая прибыль: ${fmt(s - c)}`,
+            `Себестоимость: ${fmt(c)}\nЦена продажи: ${fmt(s)}\nВаловая прибыль: ${fmt(profit)}\nНаценка: ${fmt(markup)}%\nМаржа: ${margin === null ? "не определяется (цена продажи равна нулю)" : `${fmt(margin)}%`}`,
           );
+
           break;
         }
+
         case "units": {
           const kind = get("kind"),
             from = get("from"),
