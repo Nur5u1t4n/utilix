@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import ToolRunner from '../../components/ToolRunner.astro';
+import { tools } from '../../data/tools';
+export function getStaticPaths() { return tools.map(tool => ({ params: { slug: tool.slug }, props: { tool } })); }
+const { tool } = Astro.props;
+const related = tools.filter(item => item.category === tool.category && item.slug !== tool.slug).slice(0, 3);
+---
+<BaseLayout title={`${tool.title} — Utilix`} description={tool.description}>
+  <section class="tool-page container">
+    <a class="breadcrumb" href="/">Главная</a><span class="breadcrumb-sep">/</span><a class="breadcrumb" href={`/category/${tool.category}/`}>{tool.categoryTitle}</a>
+    <div class="tool-page-heading"><span class="tool-icon large">{tool.icon}</span><div><span class="eyebrow">{tool.categoryTitle.toUpperCase()}</span><h1>{tool.title}</h1><p>{tool.description}</p></div></div>
+    <ToolRunner tool={tool} />
+    <article class="content-panel">
+      <h2>О инструменте</h2><p>{tool.intro}</p>
+      <h3>Как пользоваться</h3><ol>{tool.howTo.map(step => <li>{step}</li>)}</ol>
+      <h3>Пример</h3><p>{tool.example}</p>
+      <p class="privacy-note">Обработка выполняется в вашем браузере. Введённые данные не отправляются на сервер этим инструментом.</p>
+    </article>
+    {related.length > 0 && <section class="related"><h2>Похожие инструменты</h2><div class="tool-grid">{related.map(item => <ToolCard tool={item} />)}</div></section>}
+  </section>
+</BaseLayout>

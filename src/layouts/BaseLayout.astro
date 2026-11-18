@@ -1,0 +1,47 @@
+---
+import '../styles/global.css';
+const { title = 'Utilix — бесплатные онлайн-инструменты', description = 'Полезные онлайн-инструменты для работы, учёбы и повседневных задач.', active = '' } = Astro.props;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7fb" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="Utilix — главная"><span class="brand-mark">U</span><span>utilix</span></a>
+        <nav aria-label="Основная навигация">
+          <a href="/#categories" class:list={{active: active === 'categories'}}>Категории</a>
+          <a href="/about/">О проекте</a>
+        </nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Переключить тему">◐</button>
+      </div>
+    </header>
+    <main><slot /></main>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a class="brand footer-brand" href="/"><span class="brand-mark">U</span><span>utilix</span></a>
+        <p>Полезные инструменты. Ничего лишнего.</p>
+        <div class="footer-links"><a href="/about/">О проекте</a><a href="/privacy/">Конфиденциальность</a></div>
+        <small>© {new Date().getFullYear()} Utilix</small>
+      </div>
+    </footer>
+    <script>
+      const root = document.documentElement;
+      const saved = localStorage.getItem('utilix-theme');
+      const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.dataset.theme = saved || preferred;
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        localStorage.setItem('utilix-theme', next);
+      });
+    </script>
+  </body>
+</html>

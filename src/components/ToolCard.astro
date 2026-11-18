@@ -1,0 +1,8 @@
+---
+const { tool } = Astro.props;
+---
+<a class="tool-card" href={`/tools/${tool.slug}/`}>
+  <span class="tool-icon" aria-hidden="true">{tool.icon}</span>
+  <span class="tool-card-body"><strong>{tool.title}</strong><span>{tool.description}</span></span>
+  <span class="tool-arrow" aria-hidden="true">↗</span>
+</a>

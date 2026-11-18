@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { categories, tools } from '../../data/tools';
+export function getStaticPaths() { return categories.map(category => ({ params: { slug: category.slug }, props: { category } })); }
+const { category } = Astro.props;
+const items = tools.filter(tool => tool.category === category.slug);
+---
+<BaseLayout title={`${category.title} — Utilix`} description={category.description}>
+  <section class="page-hero container"><a class="breadcrumb" href="/">Главная / Категории</a><span class="eyebrow">КАТЕГОРИЯ</span><h1>{category.title}</h1><p>{category.description}</p></section>
+  <section class="section container"><div class="tool-grid">{items.map(tool => <ToolCard tool={tool} />)}</div></section>
+</BaseLayout>

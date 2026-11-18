@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { tools, categories } from '../data/tools';
+const popular = tools.slice(0, 6);
+---
+<BaseLayout>
+  <section class="hero">
+    <div class="container hero-inner">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> БЕСПЛАТНЫЕ ОНЛАЙН-ИНСТРУМЕНТЫ</span>
+      <h1>Маленькие задачи.<br/><span>Быстрые решения.</span></h1>
+      <p>Удобные инструменты для работы, учёбы и повседневной жизни. Без установки и лишних действий.</p>
+      <label class="search-box">
+        <span aria-hidden="true">⌕</span>
+        <input id="tool-search" type="search" placeholder="Найти инструмент..." autocomplete="off" />
+        <kbd>Поиск</kbd>
+      </label>
+      <div class="hero-meta"><span>✦ Бесплатно</span><span>↗ Прямо в браузере</span><span>◉ Без регистрации</span></div>
+    </div>
+  </section>
+  <section class="section container" id="popular">
+    <div class="section-heading"><div><span class="eyebrow">НАЧНИТЕ ЗДЕСЬ</span><h2>Популярные инструменты</h2></div><a class="text-link" href="#all-tools">Все инструменты ↗</a></div>
+    <div class="tool-grid" id="search-results">
+      {popular.map(tool => <ToolCard tool={tool} />)}
+    </div>
+    <p class="empty-state" id="no-results" hidden>Ничего не найдено. Попробуйте другой запрос.</p>
+  </section>
+  <section class="section categories-section" id="categories">
+    <div class="container">
+      <div class="section-heading"><div><span class="eyebrow">БИБЛИОТЕКА</span><h2>Категории инструментов</h2></div></div>
+      <div class="category-grid">
+        {categories.map((category, i) => <a class="category-card" href={`/category/${category.slug}/`}><span class="category-number">0{i+1}</span><h3>{category.title}</h3><p>{category.description}</p><span class="category-link">Открыть категорию ↗</span></a>)}
+      </div>
+    </div>
+  </section>
+  <section class="section container" id="all-tools">
+    <div class="section-heading"><div><span class="eyebrow">ВСЯ БИБЛИОТЕКА</span><h2>Все инструменты</h2></div><span class="count-pill">{tools.length} инструментов</span></div>
+    <div class="tool-grid all-tools-grid">
+      {tools.map(tool => <ToolCard tool={tool} />)}
+    </div>
+  </section>
+  <script>
+    const input = document.querySelector<HTMLInputElement>('#tool-search');
+    const cards = [...document.querySelectorAll<HTMLElement>('.all-tools-grid .tool-card')];
+    const popularCards = [...document.querySelectorAll<HTMLElement>('#search-results .tool-card')];
+    const noResults = document.querySelector<HTMLElement>('#no-results');
+    input?.addEventListener('input', () => {
+      const q = input.value.trim().toLocaleLowerCase('ru');
+      cards.forEach(card => card.hidden = !card.innerText.toLocaleLowerCase('ru').includes(q));
+      popularCards.forEach(card => card.hidden = !card.innerText.toLocaleLowerCase('ru').includes(q));
+      if (noResults) noResults.hidden = cards.some(card => !card.hidden);
+      if (q) document.querySelector('#all-tools')?.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  </script>
+</BaseLayout>
