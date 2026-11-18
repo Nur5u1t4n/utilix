@@ -4,6 +4,13 @@ import {
   calculateMarkupMargin,
 } from "./tools/calculations";
 
+import {
+  convertUnit,
+  convertTemperature,
+  type UnitKind,
+  type TemperatureUnit,
+} from "./tools/converters";
+
 type Field = {
   name: string;
   label: string;
@@ -16,7 +23,7 @@ type Field = {
 const $ = (selector: string, root: ParentNode = document) =>
   root.querySelector<HTMLElement>(selector);
 const field = (f: Field) =>
-  `<label class="field"><span>${f.label}</span><input name="${f.name}" type="${f.type || "text"}" value="${f.value ?? ""}" placeholder="${f.placeholder ?? ""}" ${f.min ? `min="${f.min}"` : ""} ${f.max ? `max="${f.max}"` : ""}></label>`;
+  `<label class="field"><span>${f.label}</span><input name="${f.name}" type="${f.type || "text"}" step="${f.type === "number" ? "any" : "1"}" value="${f.value ?? ""}" placeholder="${f.placeholder ?? ""}" ${f.min ? `min="${f.min}"` : ""} ${f.max ? `max="${f.max}"` : ""}></label>`;
 const select = (
   name: string,
   label: string,
@@ -233,26 +240,39 @@ function init(root: HTMLElement) {
   const f = form.querySelector("form")!;
   const unitSets: Record<string, [string, string][]> = {
     length: [
+      ["mm", "Миллиметры"],
+      ["cm", "Сантиметры"],
       ["m", "Метры"],
       ["km", "Километры"],
-      ["cm", "Сантиметры"],
-      ["mm", "Миллиметры"],
+      ["inch", "Дюймы"],
+      ["ft", "Футы"],
+      ["yard", "Ярды"],
+      ["mile", "Мили"],
     ],
     mass: [
-      ["kg", "Килограммы"],
-      ["g", "Граммы"],
       ["mg", "Миллиграммы"],
+      ["g", "Граммы"],
+      ["kg", "Килограммы"],
       ["t", "Тонны"],
+      ["oz", "Унции"],
+      ["lb", "Фунты"],
     ],
     volume: [
-      ["l", "Литры"],
       ["ml", "Миллилитры"],
+      ["l", "Литры"],
       ["m3", "Кубические метры"],
+      ["tsp", "Чайные ложки"],
+      ["tbsp", "Столовые ложки"],
+      ["cup", "Чашки"],
+      ["gallon", "Галлоны"],
     ],
     area: [
+      ["mm2", "Квадратные миллиметры"],
+      ["cm2", "Квадратные сантиметры"],
       ["m2", "Квадратные метры"],
       ["km2", "Квадратные километры"],
-      ["cm2", "Квадратные сантиметры"],
+      ["ha", "Гектары"],
+      ["acre", "Акры"],
     ],
   };
   if (id === "units") {
@@ -291,6 +311,45 @@ function init(root: HTMLElement) {
 
   const fmt = (n: number) =>
     new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 8 }).format(n);
+  const unitLabels: Record<string, string> = {
+    mm: "мм",
+    cm: "см",
+    m: "м",
+    km: "км",
+    inch: "дюйм",
+    ft: "фут",
+    yard: "ярд",
+    mile: "миля",
+
+    mg: "мг",
+    g: "г",
+    kg: "кг",
+    t: "т",
+    oz: "унция",
+    lb: "фунт",
+
+    ml: "мл",
+    l: "л",
+    m3: "м³",
+    tsp: "ч. л.",
+    tbsp: "ст. л.",
+    cup: "чашка",
+    gallon: "галлон",
+
+    mm2: "мм²",
+    cm2: "см²",
+    m2: "м²",
+    km2: "км²",
+    ha: "га",
+    acre: "акр",
+  };
+
+  const temperatureLabels: Record<string, string> = {
+    c: "°C",
+    f: "°F",
+    k: "K",
+  };
+
   const run = () => {
     try {
       switch (id) {
@@ -331,35 +390,34 @@ function init(root: HTMLElement) {
         }
 
         case "units": {
-          const kind = get("kind"),
-            from = get("from"),
-            to = get("to"),
-            v = num("value");
-          const factors: Record<string, Record<string, number>> = {
-            length: { m: 1, km: 1000, cm: 0.01, mm: 0.001 },
-            mass: { kg: 1, g: 0.001, mg: 0.000001, t: 1000 },
-            volume: { l: 1, ml: 0.001, m3: 1000 },
-            area: { m2: 1, km2: 1e6, cm2: 0.0001 },
-          };
-          const map = factors[kind];
-          if (!map[from] || !map[to])
-            throw Error(
-              "Выберите совместимые единицы. Для выбранной величины доступен ограниченный набор единиц.",
-            );
-          result(`${fmt(v)} ${from} = ${fmt((v * map[from]) / map[to])} ${to}`);
+          const kind = get("kind") as UnitKind;
+          const from = get("from");
+          const to = get("to");
+          const value = requiredNum("value", "Значение");
+
+          const converted = convertUnit(value, kind, from, to);
+
+          result(
+            `${fmt(value)} ${unitLabels[from]} = ${fmt(converted)} ${unitLabels[to]}`,
+          );
+
           break;
         }
+
         case "temperature": {
-          const v = num("value"),
-            from = get("from"),
-            to = get("to");
-          let c =
-            from === "C" ? v : from === "F" ? ((v - 32) * 5) / 9 : v - 273.15;
-          const out =
-            to === "C" ? c : to === "F" ? (c * 9) / 5 + 32 : c + 273.15;
-          result(`${fmt(v)} °${from} = ${fmt(out)} °${to}`);
+          const value = requiredNum("value", "Температура");
+          const from = get("from").toLowerCase() as TemperatureUnit;
+          const to = get("to").toLowerCase() as TemperatureUnit;
+
+          const converted = convertTemperature(value, from, to);
+
+          result(
+            `${fmt(value)} ${temperatureLabels[from]} = ${fmt(converted)} ${temperatureLabels[to]}`,
+          );
+
           break;
         }
+
         case "number-base": {
           const v = parseInt(get("value"), Number(get("from"))),
             to = Number(get("to"));
