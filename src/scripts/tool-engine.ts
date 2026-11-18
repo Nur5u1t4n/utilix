@@ -13,6 +13,7 @@ import {
 
 import { convertBase } from "./tools/number-base";
 import { formatJson } from "./tools/json-formatter";
+import { parseCsv, type CsvDelimiter } from "./tools/csv-parser";
 
 type Field = {
   name: string;
@@ -442,19 +443,19 @@ function init(root: HTMLElement) {
         }
 
         case "csv-viewer": {
-          const sep =
-            get("delimiter") === "semicolon"
-              ? ";"
-              : get("delimiter") === "tab"
-                ? "\t"
-                : ",";
+          const delimiterMap: Record<string, CsvDelimiter> = {
+            comma: ",",
+            semicolon: ";",
+            tab: "\t",
+          };
 
-          const rows = get("text")
-            .split(/\r?\n/)
-            .filter(Boolean)
-            .map((line) => line.split(sep));
+          const delimiter = delimiterMap[get("delimiter")];
 
-          if (!rows.length) throw Error("Добавьте CSV-текст.");
+          if (!delimiter) {
+            throw new Error("Выберите корректный разделитель CSV.");
+          }
+
+          const rows = parseCsv(get("text"), delimiter);
 
           set(
             `<div class="table-wrap"><table class="csv-table">${rows
