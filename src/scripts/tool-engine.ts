@@ -14,6 +14,7 @@ import {
 import { convertBase } from "./tools/number-base";
 import { formatJson } from "./tools/json-formatter";
 import { parseCsv, type CsvDelimiter } from "./tools/csv-parser";
+import { removeDuplicates } from "./tools/remove-duplicates";
 
 type Field = {
   name: string;
@@ -482,14 +483,12 @@ function init(root: HTMLElement) {
         }
 
         case "remove-duplicates": {
-          const lines = get("text").split(/\r?\n/),
-            unique = [...new Set(lines)];
-          result(
-            unique.join("\n") +
-              `\n\nУдалено повторов: ${lines.length - unique.length}`,
-          );
+          const { result: text, removed } = removeDuplicates(get("text"));
+
+          result(`${text}\n\nУдалено повторов: ${removed}`);
           break;
         }
+
         case "text-diff": {
           const a = new Set(get("a").split(/\r?\n/)),
             b = new Set(get("b").split(/\r?\n/));
