@@ -11,6 +11,8 @@ import {
   type TemperatureUnit,
 } from "./tools/converters";
 
+import { convertBase } from "./tools/number-base";
+
 type Field = {
   name: string;
   label: string;
@@ -419,11 +421,11 @@ function init(root: HTMLElement) {
         }
 
         case "number-base": {
-          const v = parseInt(get("value"), Number(get("from"))),
-            to = Number(get("to"));
-          if (Number.isNaN(v))
-            throw Error("Число не соответствует исходной системе счисления.");
-          result(v.toString(to).toUpperCase());
+          const value = get("value");
+          const from = Number(get("from"));
+          const to = Number(get("to"));
+
+          result(convertBase(value, from, to));
           break;
         }
         case "json-formatter": {
