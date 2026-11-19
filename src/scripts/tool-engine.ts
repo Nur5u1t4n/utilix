@@ -16,6 +16,7 @@ import { formatJson } from "./tools/json-formatter";
 import { parseCsv, type CsvDelimiter } from "./tools/csv-parser";
 import { removeDuplicates } from "./tools/remove-duplicates";
 import { convertBase64 } from "./tools/base64";
+import { compareTexts } from "./tools/text-diff";
 
 type Field = {
   name: string;
@@ -491,11 +492,26 @@ function init(root: HTMLElement) {
         }
 
         case "text-diff": {
-          const a = new Set(get("a").split(/\r?\n/)),
-            b = new Set(get("b").split(/\r?\n/));
+          const operations = compareTexts(get("a"), get("b"));
+
+          const added = operations.filter((item) => item.type === "add").length;
+          const removed = operations.filter(
+            (item) => item.type === "remove",
+          ).length;
+
+          const lines = operations.map((item) => {
+            const prefix =
+              item.type === "add" ? "+ " : item.type === "remove" ? "- " : "  ";
+
+            return `${prefix}${item.value}`;
+          });
+
+          const summary = `Добавлено строк: ${added}\nУдалено строк: ${removed}`;
+
           result(
-            `Только в первом тексте:\n${[...a].filter((x) => !b.has(x)).join("\n") || "—"}\n\nТолько во втором тексте:\n${[...b].filter((x) => !a.has(x)).join("\n") || "—"}`,
+            `${summary}\n\n${lines.length > 0 ? lines.join("\n") : "Тексты полностью совпадают."}`,
           );
+
           break;
         }
 
