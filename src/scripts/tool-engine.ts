@@ -17,6 +17,7 @@ import { parseCsv, type CsvDelimiter } from "./tools/csv-parser";
 import { removeDuplicates } from "./tools/remove-duplicates";
 import { convertBase64 } from "./tools/base64";
 import { compareTexts } from "./tools/text-diff";
+import { generateUuids } from "./tools/uuid";
 
 type Field = {
   name: string;
@@ -529,12 +530,11 @@ function init(root: HTMLElement) {
         }
 
         case "uuid": {
-          const n = Math.max(1, Math.min(100, Math.floor(num("count"))));
-          result(
-            Array.from({ length: n }, () => crypto.randomUUID()).join("\n"),
-          );
+          const count = requiredNum("count", "Количество UUID");
+          result(generateUuids(count).join("\n"));
           break;
         }
+
         case "password": {
           let chars = "";
           if (f.querySelector<HTMLInputElement>("[name=lower]")?.checked)
