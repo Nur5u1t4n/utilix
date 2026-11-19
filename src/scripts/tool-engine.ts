@@ -20,6 +20,7 @@ import { compareTexts } from "./tools/text-diff";
 import { generateUuids } from "./tools/uuid";
 import { generatePassword } from "./tools/password";
 import { convertUrl } from "./tools/url-encoder";
+import { countText } from "./tools/text-counter";
 
 type Field = {
   name: string;
@@ -578,12 +579,20 @@ function init(root: HTMLElement) {
   };
   if (id === "text-counter") {
     const ta = f.querySelector("textarea")!;
+
     const update = () => {
-      const t = ta.value;
+      const stats = countText(ta.value);
+
       set(
-        `<div class="stats-grid"><div><strong>${t.length}</strong><span>Символов</span></div><div><strong>${t.trim() ? t.trim().split(/\s+/).length : 0}</strong><span>Слов</span></div><div><strong>${t ? t.split(/\r?\n/).length : 0}</strong><span>Строк</span></div><div><strong>${t.split(/\s/).filter(Boolean).length}</strong><span>Без пробелов</span></div></div>`,
+        `<div class="stats-grid">
+        <div><strong>${stats.characters}</strong><span>Символов</span></div>
+        <div><strong>${stats.words}</strong><span>Слов</span></div>
+        <div><strong>${stats.lines}</strong><span>Строк</span></div>
+        <div><strong>${stats.charactersWithoutWhitespace}</strong><span>Без пробелов</span></div>
+      </div>`,
       );
     };
+
     ta.addEventListener("input", update);
     update();
   } else
