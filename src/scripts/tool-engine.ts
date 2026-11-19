@@ -19,6 +19,7 @@ import { convertBase64 } from "./tools/base64";
 import { compareTexts } from "./tools/text-diff";
 import { generateUuids } from "./tools/uuid";
 import { generatePassword } from "./tools/password";
+import { convertUrl } from "./tools/url-encoder";
 
 type Field = {
   name: string;
@@ -557,13 +558,16 @@ function init(root: HTMLElement) {
           break;
         }
 
-        case "url-encoder":
-          result(
-            get("mode") === "encode"
-              ? encodeURIComponent(get("text"))
-              : decodeURIComponent(get("text")),
-          );
+        case "url-encoder": {
+          const mode = get("mode");
+
+          if (mode !== "encode" && mode !== "decode") {
+            throw new Error("Неизвестный режим URL-кодирования.");
+          }
+
+          result(convertUrl(get("text"), mode));
           break;
+        }
       }
     } catch (e) {
       set(`<p class="error-message"></p>`);
