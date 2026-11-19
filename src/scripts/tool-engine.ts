@@ -18,6 +18,7 @@ import { removeDuplicates } from "./tools/remove-duplicates";
 import { convertBase64 } from "./tools/base64";
 import { compareTexts } from "./tools/text-diff";
 import { generateUuids } from "./tools/uuid";
+import { generatePassword } from "./tools/password";
 
 type Field = {
   name: string;
@@ -299,8 +300,6 @@ function init(root: HTMLElement) {
 
   const get = (name: string) => (new FormData(f).get(name) || "").toString();
 
-  const num = (name: string) => Number(get(name));
-
   const requiredNum = (name: string, label: string) => {
     const raw = get(name).trim();
 
@@ -536,21 +535,28 @@ function init(root: HTMLElement) {
         }
 
         case "password": {
-          let chars = "";
-          if (f.querySelector<HTMLInputElement>("[name=lower]")?.checked)
-            chars += "abcdefghijklmnopqrstuvwxyz";
-          if (f.querySelector<HTMLInputElement>("[name=upper]")?.checked)
-            chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-          if (f.querySelector<HTMLInputElement>("[name=numbers]")?.checked)
-            chars += "0123456789";
-          if (f.querySelector<HTMLInputElement>("[name=symbols]")?.checked)
-            chars += "!@#$%^&*()-_=+[]{}";
-          if (!chars) throw Error("Выберите хотя бы один набор символов.");
-          const n = Math.max(8, Math.min(128, Math.floor(num("length"))));
-          const bytes = crypto.getRandomValues(new Uint8Array(n));
-          result([...bytes].map((b) => chars[b % chars.length]).join(""));
+          const length = requiredNum("length", "Длина пароля");
+
+          const password = generatePassword({
+            length,
+            lower:
+              f.querySelector<HTMLInputElement>("[name=lower]")?.checked ??
+              false,
+            upper:
+              f.querySelector<HTMLInputElement>("[name=upper]")?.checked ??
+              false,
+            numbers:
+              f.querySelector<HTMLInputElement>("[name=numbers]")?.checked ??
+              false,
+            symbols:
+              f.querySelector<HTMLInputElement>("[name=symbols]")?.checked ??
+              false,
+          });
+
+          result(password);
           break;
         }
+
         case "url-encoder":
           result(
             get("mode") === "encode"
