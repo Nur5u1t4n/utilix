@@ -15,6 +15,7 @@ import { convertBase } from "./tools/number-base";
 import { formatJson } from "./tools/json-formatter";
 import { parseCsv, type CsvDelimiter } from "./tools/csv-parser";
 import { removeDuplicates } from "./tools/remove-duplicates";
+import { convertBase64 } from "./tools/base64";
 
 type Field = {
   name: string;
@@ -497,26 +498,20 @@ function init(root: HTMLElement) {
           );
           break;
         }
+
         case "base64": {
           const text = get("text");
+          const mode = get("mode");
 
-          if (get("mode") === "encode") {
-            const bytes = new TextEncoder().encode(text);
-            const binary = Array.from(bytes, (byte) =>
-              String.fromCharCode(byte),
-            ).join("");
-
-            result(btoa(binary));
-          } else {
-            const binary = atob(text.trim());
-
-            const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-
-            result(new TextDecoder().decode(bytes));
+          if (mode !== "encode" && mode !== "decode") {
+            throw new Error("Неизвестный режим Base64.");
           }
+
+          result(convertBase64(text, mode));
 
           break;
         }
+
         case "uuid": {
           const n = Math.max(1, Math.min(100, Math.floor(num("count"))));
           result(
