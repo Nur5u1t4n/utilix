@@ -2,57 +2,172 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolCard from '../components/ToolCard.astro';
 import { tools, categories } from '../data/tools';
+
 const popular = tools.slice(0, 6);
 ---
+
 <BaseLayout
   title="Utilix — бесплатные онлайн-инструменты"
   description="Бесплатные онлайн-инструменты для расчётов, конвертации и работы с текстом и данными. Работайте прямо в браузере, без установки и регистрации."
 >
   <section class="hero">
     <div class="container hero-inner">
-      <span class="eyebrow"><span class="eyebrow-dot"></span> БЕСПЛАТНЫЕ ОНЛАЙН-ИНСТРУМЕНТЫ</span>
-      <h1>Маленькие задачи.<br/><span>Быстрые решения.</span></h1>
-      <p>Удобные инструменты для работы, учёбы и повседневной жизни. Без установки и лишних действий.</p>
+      <span class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        БЕСПЛАТНЫЕ ОНЛАЙН-ИНСТРУМЕНТЫ
+      </span>
+
+      <h1>
+        Бесплатные онлайн-инструменты.<br />
+        <span>Просто. Быстро. Без регистрации.</span>
+      </h1>
+
+      <p>
+        Удобные инструменты для работы, учёбы и повседневной жизни.
+        Без установки и лишних действий.
+      </p>
+
       <label class="search-box">
         <span aria-hidden="true">⌕</span>
-        <input id="tool-search" type="search" placeholder="Найти инструмент..." autocomplete="off" />
+        <input
+          id="tool-search"
+          type="search"
+          placeholder="Найти инструмент..."
+          autocomplete="off"
+        />
         <kbd>Поиск</kbd>
       </label>
-      <div class="hero-meta"><span>✦ Бесплатно</span><span>↗ Прямо в браузере</span><span>◉ Без регистрации</span></div>
-    </div>
-  </section>
-  <section class="section container" id="popular">
-    <div class="section-heading"><div><span class="eyebrow">НАЧНИТЕ ЗДЕСЬ</span><h2>Популярные инструменты</h2></div><a class="text-link" href="#all-tools">Все инструменты ↗</a></div>
-    <div class="tool-grid" id="search-results">
-      {popular.map(tool => <ToolCard tool={tool} />)}
-    </div>
-    <p class="empty-state" id="no-results" hidden>Ничего не найдено. Попробуйте другой запрос.</p>
-  </section>
-  <section class="section categories-section" id="categories">
-    <div class="container">
-      <div class="section-heading"><div><span class="eyebrow">БИБЛИОТЕКА</span><h2>Категории инструментов</h2></div></div>
-      <div class="category-grid">
-        {categories.map((category, i) => <a class="category-card" href={`/category/${category.slug}/`}><span class="category-number">0{i+1}</span><h3>{category.title}</h3><p>{category.description}</p><span class="category-link">Открыть категорию ↗</span></a>)}
+
+      <div id="search-results" class="tool-grid" hidden></div>
+
+      <p class="empty-state" id="no-results" hidden>
+        Ничего не найдено. Попробуйте другой запрос.
+      </p>
+
+      <div class="hero-meta">
+        <span>✦ Бесплатно</span>
+        <span>↗ Прямо в браузере</span>
+        <span>◉ Без регистрации</span>
       </div>
     </div>
   </section>
+
+  <section class="section container" id="popular">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">НАЧНИТЕ ЗДЕСЬ</span>
+        <h2>Популярные инструменты</h2>
+      </div>
+      <a class="text-link" href="#all-tools">Все инструменты ↗</a>
+    </div>
+
+    <div class="tool-grid" id="popular-tools-grid">
+      {popular.map(tool => <ToolCard tool={tool} />)}
+    </div>
+  </section>
+
+  <section class="section categories-section" id="categories">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">БИБЛИОТЕКА</span>
+          <h2>Категории инструментов</h2>
+        </div>
+      </div>
+
+      <div class="category-grid">
+        {categories.map((category, i) => (
+          <a class="category-card" href={`/category/${category.slug}/`}>
+            <span class="category-number">0{i + 1}</span>
+            <h3>{category.title}</h3>
+            <p>{category.description}</p>
+            <span class="category-link">Открыть категорию ↗</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <section class="section container" id="all-tools">
-    <div class="section-heading"><div><span class="eyebrow">ВСЯ БИБЛИОТЕКА</span><h2>Все инструменты</h2></div><span class="count-pill">{tools.length} инструментов</span></div>
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">ВСЯ БИБЛИОТЕКА</span>
+        <h2>Все инструменты</h2>
+      </div>
+      <span class="count-pill">{tools.length} инструментов</span>
+    </div>
+
     <div class="tool-grid all-tools-grid">
       {tools.map(tool => <ToolCard tool={tool} />)}
     </div>
   </section>
+
   <script>
     const input = document.querySelector<HTMLInputElement>('#tool-search');
-    const cards = [...document.querySelectorAll<HTMLElement>('.all-tools-grid .tool-card')];
-    const popularCards = [...document.querySelectorAll<HTMLElement>('#search-results .tool-card')];
+
+    const allToolsGrid = document.querySelector<HTMLElement>('.all-tools-grid');
+
+    const cards = allToolsGrid
+      ? [...allToolsGrid.querySelectorAll<HTMLElement>('.tool-card')]
+      : [];
+
+    const searchResults = document.querySelector<HTMLElement>('#search-results');
     const noResults = document.querySelector<HTMLElement>('#no-results');
+
+    const popularSection = document.querySelector<HTMLElement>('#popular');
+    const categoriesSection = document.querySelector<HTMLElement>('#categories');
+    const allToolsSection = document.querySelector<HTMLElement>('#all-tools');
+
     input?.addEventListener('input', () => {
-      const q = input.value.trim().toLocaleLowerCase('ru');
-      cards.forEach(card => card.hidden = !card.innerText.toLocaleLowerCase('ru').includes(q));
-      popularCards.forEach(card => card.hidden = !card.innerText.toLocaleLowerCase('ru').includes(q));
-      if (noResults) noResults.hidden = cards.some(card => !card.hidden);
-      if (q) document.querySelector('#all-tools')?.scrollIntoView({behavior:'smooth', block:'start'});
+      const query = input.value
+        .trim()
+        .toLocaleLowerCase('ru')
+        .replace(/ё/g, 'е');
+
+      if (!query) {
+        cards.forEach(card => {
+          card.hidden = false;
+          allToolsGrid?.append(card);
+        });
+
+        if (searchResults) searchResults.hidden = true;
+        if (noResults) noResults.hidden = true;
+
+        if (popularSection) popularSection.hidden = false;
+        if (categoriesSection) categoriesSection.hidden = false;
+        if (allToolsSection) allToolsSection.hidden = false;
+
+        return;
+      }
+
+      if (popularSection) popularSection.hidden = true;
+      if (categoriesSection) categoriesSection.hidden = true;
+      if (allToolsSection) allToolsSection.hidden = true;
+
+      if (searchResults) searchResults.hidden = false;
+
+      let matchCount = 0;
+
+      cards.forEach(card => {
+        const searchText = (card.dataset.search ?? card.innerText)
+          .toLocaleLowerCase('ru')
+          .replace(/ё/g, 'е');
+
+        const matches = searchText.includes(query);
+
+        card.hidden = !matches;
+
+        if (matches) {
+          matchCount++;
+          searchResults?.append(card);
+        } else {
+          allToolsGrid?.append(card);
+        }
+      });
+
+      if (noResults) {
+        noResults.hidden = matchCount > 0;
+      }
     });
   </script>
 </BaseLayout>
