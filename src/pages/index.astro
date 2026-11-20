@@ -4,7 +4,10 @@ import ToolCard from '../components/ToolCard.astro';
 import { tools, categories } from '../data/tools';
 const popular = tools.slice(0, 6);
 ---
-<BaseLayout>
+<BaseLayout
+  title="Utilix — бесплатные онлайн-инструменты"
+  description="Бесплатные онлайн-инструменты для расчётов, конвертации и работы с текстом и данными. Работайте прямо в браузере, без установки и регистрации."
+>
   <section class="hero">
     <div class="container hero-inner">
       <span class="eyebrow"><span class="eyebrow-dot"></span> БЕСПЛАТНЫЕ ОНЛАЙН-ИНСТРУМЕНТЫ</span>
