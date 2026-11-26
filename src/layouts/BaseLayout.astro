@@ -24,6 +24,16 @@ const languageNames = { ru: "Язык", en: "Language", kz: "Тіл" };
 const canonicalURL = Astro.site
   ? new URL(Astro.url.pathname, Astro.site).href
   : undefined;
+const localizedAlternates = Astro.site
+  ? [
+      { language: "ru", path: pathname },
+      { language: "en", path: `/en${pathname}` },
+      { language: "kk-KZ", path: `/kz${pathname}` },
+    ].map(({ language: alternateLanguage, path }) => ({
+      language: alternateLanguage,
+      href: new URL(path, Astro.site).href,
+    }))
+  : [];
 ---
 <!doctype html>
 <html lang={language === "kz" ? "kk-KZ" : language}>
@@ -36,6 +46,9 @@ const canonicalURL = Astro.site
     <title>{title}</title>
 
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
+    {localizedAlternates.map((alternate) => (
+      <link rel="alternate" hreflang={alternate.language} href={alternate.href} />
+    ))}
 
     <meta property="og:locale" content={language === "kz" ? "kk_KZ" : language === "en" ? "en_US" : "ru_RU"} />
     <meta property="og:type" content="website" />
