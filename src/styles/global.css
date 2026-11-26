@@ -11,3 +11,4 @@
 
 .language-toggle{display:inline-grid;place-items:center;min-width:40px;height:40px;padding:0 8px;border:1px solid var(--line);border-radius:11px;color:var(--text);font-size:12px;font-weight:700}
 .language-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.brand-mark{background:transparent;border-radius:0;object-fit:contain}

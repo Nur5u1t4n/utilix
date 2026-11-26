@@ -42,12 +42,13 @@ const canonicalURL = Astro.site
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="200x200" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
   </head>
   <body>
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href="/" aria-label="Utilix — главная"><span class="brand-mark">U</span><span>utilix</span></a>
+        <a class="brand" href="/" aria-label={language === "en" ? "Utilix — home" : "Utilix — главная"}><img class="brand-mark" src="/favicon.png" alt="" /><span>utilix</span></a>
         <nav aria-label={language === "en" ? "Main navigation" : "Основная навигация"}>
           <a href={language === "en" ? "/en/#categories" : "/#categories"} class:list={{active: active === 'categories'}}>{language === "en" ? "Categories" : "Категории"}</a>
           <a href={language === "en" ? "/en/about/" : "/about/"}>{language === "en" ? "About" : "О проекте"}</a>
@@ -59,7 +60,7 @@ const canonicalURL = Astro.site
     <main><slot /></main>
     <footer class="site-footer">
       <div class="container footer-inner">
-        <a class="brand footer-brand" href="/"><span class="brand-mark">U</span><span>utilix</span></a>
+        <a class="brand footer-brand" href="/" aria-label={language === "en" ? "Utilix — home" : "Utilix — главная"}><img class="brand-mark" src="/favicon.png" alt="" /><span>utilix</span></a>
         <p>{language === "en" ? "Useful tools. Nothing extra." : "Полезные инструменты. Ничего лишнего."}</p>
         <div class="footer-links"><a href={language === "en" ? "/en/about/" : "/about/"}>{language === "en" ? "About" : "О проекте"}</a><a href={language === "en" ? "/en/privacy/" : "/privacy/"}>{language === "en" ? "Privacy" : "Конфиденциальность"}</a></div>
         <small>© {new Date().getFullYear()} Utilix</small>
