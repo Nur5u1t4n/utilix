@@ -6,7 +6,8 @@ const searchText = [
   tool.description,
   tool.keywords,
 ].join(' ').toLocaleLowerCase('ru');
-const prefix = Astro.url.pathname.startsWith('/en/') ? '/en' : '';
+const localePrefix = Astro.url.pathname.match(/^\/(en|kz)\//)?.[1];
+const prefix = localePrefix ? `/${localePrefix}` : '';
 ---
 
 <a

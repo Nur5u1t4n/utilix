@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ToolCard from '../../../components/ToolCard.astro';
+import { kazakhCategories, kazakhTools } from '../../../data/kazakh';
+export function getStaticPaths() { return kazakhCategories.map(category => ({ params: { slug: category.slug }, props: { category } })); }
+const { category } = Astro.props;
+const items = kazakhTools.filter(tool => tool.category === category.slug);
+---
+<BaseLayout language="kz" title={`${category.title} — Utilix`} description={category.description}>
+  <section class="page-hero container"><a class="breadcrumb" href="/kz/">Басты бет</a><span class="breadcrumb-sep">/</span><span class="breadcrumb">Санаттар</span><span class="eyebrow">САНАТ</span><h1>{category.title}</h1><p>{category.description}</p></section>
+  <section class="section container"><div class="tool-grid">{items.map(tool => <ToolCard tool={tool} />)}</div></section>
+</BaseLayout>

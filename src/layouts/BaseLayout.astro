@@ -5,7 +5,7 @@ interface Props {
   title?: string;
   description?: string;
   active?: string;
-  language?: "ru" | "en";
+  language?: "ru" | "en" | "kz";
 }
 
 const {
@@ -15,12 +15,18 @@ const {
   language = "ru",
 } = Astro.props;
 
+const pathname = Astro.url.pathname.replace(/^\/(?:en|kz)(?=\/|$)/, "") || "/";
+const localizedHref = (locale: "ru" | "en" | "kz") =>
+  locale === "ru" ? pathname : `/${locale}${pathname}`;
+const localeHome = language === "ru" ? "/" : `/${language}/`;
+const languageNames = { ru: "Язык", en: "Language", kz: "Тіл" };
+
 const canonicalURL = Astro.site
   ? new URL(Astro.url.pathname, Astro.site).href
   : undefined;
 ---
 <!doctype html>
-<html lang={language}>
+<html lang={language === "kz" ? "kk-KZ" : language}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -31,7 +37,7 @@ const canonicalURL = Astro.site
 
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
 
-    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale" content={language === "kz" ? "kk_KZ" : language === "en" ? "en_US" : "ru_RU"} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Utilix" />
     <meta property="og:title" content={title} />
@@ -48,21 +54,25 @@ const canonicalURL = Astro.site
   <body>
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href="/" aria-label={language === "en" ? "Utilix — home" : "Utilix — главная"}><img class="brand-mark" src="/favicon.png" alt="" /><span>utilix</span></a>
-        <nav aria-label={language === "en" ? "Main navigation" : "Основная навигация"}>
-          <a href={language === "en" ? "/en/#categories" : "/#categories"} class:list={{active: active === 'categories'}}>{language === "en" ? "Categories" : "Категории"}</a>
-          <a href={language === "en" ? "/en/about/" : "/about/"}>{language === "en" ? "About" : "О проекте"}</a>
+        <a class="brand" href={localeHome} aria-label={language === "en" ? "Utilix — home" : language === "kz" ? "Utilix — басты бет" : "Utilix — главная"}><img class="brand-mark" src="/favicon.png" alt="" /><span>utilix</span></a>
+        <nav aria-label={language === "en" ? "Main navigation" : language === "kz" ? "Негізгі навигация" : "Основная навигация"}>
+          <a href={`${localeHome}#categories`} class:list={{active: active === 'categories'}}>{language === "en" ? "Categories" : language === "kz" ? "Санаттар" : "Категории"}</a>
+          <a href={language === "en" ? "/en/about/" : language === "kz" ? "/kz/about/" : "/about/"}>{language === "en" ? "About" : language === "kz" ? "Жоба туралы" : "О проекте"}</a>
         </nav>
-        <a class="language-toggle" href={language === "en" ? Astro.url.pathname.replace(/^\/en/, "") || "/" : `/en${Astro.url.pathname}`} lang={language === "en" ? "ru" : "en"} aria-label={language === "en" ? "Переключить на русский" : "Switch to English"}>{language === "en" ? "RU" : "EN"}</a>
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Переключить тему">◐</button>
+        <div class="language-switcher" aria-label={languageNames[language]}>
+          <a href={localizedHref("ru")} lang="ru" aria-current={language === "ru" ? "page" : undefined}>RU</a>
+          <a href={localizedHref("en")} lang="en" aria-current={language === "en" ? "page" : undefined}>EN</a>
+          <a href={localizedHref("kz")} lang="kk-KZ" aria-current={language === "kz" ? "page" : undefined}>KZ</a>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label={language === "en" ? "Toggle theme" : language === "kz" ? "Тақырыпты ауыстыру" : "Переключить тему"}>◐</button>
       </div>
     </header>
     <main><slot /></main>
     <footer class="site-footer">
       <div class="container footer-inner">
-        <a class="brand footer-brand" href="/" aria-label={language === "en" ? "Utilix — home" : "Utilix — главная"}><img class="brand-mark" src="/favicon.png" alt="" /><span>utilix</span></a>
-        <p>{language === "en" ? "Useful tools. Nothing extra." : "Полезные инструменты. Ничего лишнего."}</p>
-        <div class="footer-links"><a href={language === "en" ? "/en/about/" : "/about/"}>{language === "en" ? "About" : "О проекте"}</a><a href={language === "en" ? "/en/privacy/" : "/privacy/"}>{language === "en" ? "Privacy" : "Конфиденциальность"}</a></div>
+        <a class="brand footer-brand" href={localeHome} aria-label={language === "en" ? "Utilix — home" : language === "kz" ? "Utilix — басты бет" : "Utilix — главная"}><img class="brand-mark" src="/favicon.png" alt="" /><span>utilix</span></a>
+        <p>{language === "en" ? "Useful tools. Nothing extra." : language === "kz" ? "Пайдалы құралдар. Артық ештеңе жоқ." : "Полезные инструменты. Ничего лишнего."}</p>
+        <div class="footer-links"><a href={language === "en" ? "/en/about/" : language === "kz" ? "/kz/about/" : "/about/"}>{language === "en" ? "About" : language === "kz" ? "Жоба туралы" : "О проекте"}</a><a href={language === "en" ? "/en/privacy/" : language === "kz" ? "/kz/privacy/" : "/privacy/"}>{language === "en" ? "Privacy" : language === "kz" ? "Құпиялылық" : "Конфиденциальность"}</a></div>
         <small>© {new Date().getFullYear()} Utilix</small>
       </div>
     </footer>
