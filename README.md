@@ -1,11 +1,24 @@
 # Utilix
 
-Русскоязычная библиотека бесплатных онлайн-инструментов. Первая версия — статический сайт на Astro + TypeScript без базы данных и серверной части.
+Русскоязычная библиотека бесплатных онлайн-инструментов для расчётов, конвертации и работы с текстом и данными. Статический сайт на Astro 7 и TypeScript: без базы данных, регистрации и серверной обработки пользовательских данных.
+
+**Опубликованная версия:** https://utilix-62i.pages.dev
+
+## Инструменты
+
+MVP включает 15 инструментов в четырёх категориях:
+
+| Категория | Инструменты |
+| --- | --- |
+| Калькуляторы | проценты, скидка, наценка и маржа |
+| Конвертеры | единицы измерения, температура, системы счисления |
+| Текст и данные | JSON Formatter, CSV Viewer, удаление дубликатов строк, сравнение текстов, счётчик слов и символов |
+| Для разработчиков | Base64, UUID v4, генератор паролей, URL encode/decode |
 
 ## Требования
 
-- Node.js 20.3.0+ (рекомендуется актуальная LTS)
-- npm
+- Node.js 22.23.4+ — минимальная версия, которую требует Astro 7.
+- npm 9.6.5+.
 
 ## Запуск
 
@@ -16,23 +29,26 @@ npm run dev
 
 Откройте адрес, который покажет Astro (обычно http://localhost:4321).
 
-## Проверка production-сборки
+## Проверка
 
 ```bash
-npm run check
-npm run build
-npm run preview
+npm run check    # типы и ошибки Astro
+npm test         # тесты Vitest
+npm run build    # production-сборка в dist/
+npm run preview  # локальный просмотр собранного сайта
 ```
+
+Для тестов в режиме наблюдения: `npm run test:watch`.
 
 ## Публикация
 
-Проект предназначен для статического хостинга, например Cloudflare Pages.
+Сайт статический и опубликован на Cloudflare Pages: https://utilix-62i.pages.dev
 
 - Build command: `npm run build`
 - Build output directory: `dist`
 - Framework preset: Astro
 
-Перед публикацией замените `site` в `astro.config.mjs` на настоящий домен. Если домена пока нет, можно временно оставить значение-заглушку и настроить sitemap позже.
+Адрес сайта задан в `astro.config.mjs` (`site`) и продублирован в `public/robots.txt`. От него зависят canonical-ссылки, sitemap и robots. При подключении собственного домена обновите оба файла, добавьте домен в Cloudflare Pages и проверьте canonical-ссылки, `sitemap-index.xml` и `robots.txt`.
 
 ## Принципы
 
@@ -44,4 +60,19 @@ npm run preview
 
 ## Структура
 
-См. `docs/project-structure.md` и `docs/technical-spec.md`.
+```text
+src/
+├── components/          # Header, Footer, ToolCard, ToolRunner
+├── data/tools.ts        # каталог инструментов, категории, описания и SEO-метаданные
+├── layouts/             # BaseLayout: каркас страницы, метаданные, тема
+├── pages/               # главная, категории, страницы инструментов, о проекте, конфиденциальность
+├── scripts/
+│   ├── tool-engine.ts   # связывает разметку инструментов с их логикой
+│   └── tools/           # логика инструментов
+└── styles/global.css
+public/                  # favicon.svg, robots.txt
+tests/                   # тесты Vitest
+docs/                    # техническое задание
+```
+
+Правила разработки описаны в `AGENTS.md`, техническое задание — в `docs/technical-spec.md`.

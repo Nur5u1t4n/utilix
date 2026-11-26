@@ -1,10 +1,10 @@
 ---
 const { tool } = Astro.props;
 ---
-<section class="tool-runner" data-tool={tool.slug}>
+<section class="tool-runner" data-tool={tool.slug} data-language={Astro.props.language ?? "ru"}>
   <div class="tool-form" id="tool-form"></div>
   <div class="tool-output" id="tool-output" aria-live="polite">
-    <span class="output-placeholder">Результат появится здесь</span>
+    <span class="output-placeholder">{Astro.props.language === "en" ? "Your result will appear here" : "Результат появится здесь"}</span>
   </div>
   <div class="tool-actions" id="tool-actions"></div>
 </section>

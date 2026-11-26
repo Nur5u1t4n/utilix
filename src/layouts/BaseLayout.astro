@@ -5,12 +5,14 @@ interface Props {
   title?: string;
   description?: string;
   active?: string;
+  language?: "ru" | "en";
 }
 
 const {
   title = 'Utilix — бесплатные онлайн-инструменты',
   description = 'Полезные онлайн-инструменты для работы, учёбы и повседневных задач.',
   active = '',
+  language = "ru",
 } = Astro.props;
 
 const canonicalURL = Astro.site
@@ -18,7 +20,7 @@ const canonicalURL = Astro.site
   : undefined;
 ---
 <!doctype html>
-<html lang="ru">
+<html lang={language}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -46,10 +48,11 @@ const canonicalURL = Astro.site
     <header class="site-header">
       <div class="container header-inner">
         <a class="brand" href="/" aria-label="Utilix — главная"><span class="brand-mark">U</span><span>utilix</span></a>
-        <nav aria-label="Основная навигация">
-          <a href="/#categories" class:list={{active: active === 'categories'}}>Категории</a>
-          <a href="/about/">О проекте</a>
+        <nav aria-label={language === "en" ? "Main navigation" : "Основная навигация"}>
+          <a href={language === "en" ? "/en/#categories" : "/#categories"} class:list={{active: active === 'categories'}}>{language === "en" ? "Categories" : "Категории"}</a>
+          <a href={language === "en" ? "/en/about/" : "/about/"}>{language === "en" ? "About" : "О проекте"}</a>
         </nav>
+        <a class="language-toggle" href={language === "en" ? Astro.url.pathname.replace(/^\/en/, "") || "/" : `/en${Astro.url.pathname}`} lang={language === "en" ? "ru" : "en"} aria-label={language === "en" ? "Переключить на русский" : "Switch to English"}>{language === "en" ? "RU" : "EN"}</a>
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Переключить тему">◐</button>
       </div>
     </header>
@@ -57,8 +60,8 @@ const canonicalURL = Astro.site
     <footer class="site-footer">
       <div class="container footer-inner">
         <a class="brand footer-brand" href="/"><span class="brand-mark">U</span><span>utilix</span></a>
-        <p>Полезные инструменты. Ничего лишнего.</p>
-        <div class="footer-links"><a href="/about/">О проекте</a><a href="/privacy/">Конфиденциальность</a></div>
+        <p>{language === "en" ? "Useful tools. Nothing extra." : "Полезные инструменты. Ничего лишнего."}</p>
+        <div class="footer-links"><a href={language === "en" ? "/en/about/" : "/about/"}>{language === "en" ? "About" : "О проекте"}</a><a href={language === "en" ? "/en/privacy/" : "/privacy/"}>{language === "en" ? "Privacy" : "Конфиденциальность"}</a></div>
         <small>© {new Date().getFullYear()} Utilix</small>
       </div>
     </footer>

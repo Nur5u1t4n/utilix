@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { englishTools, englishCategories } from '../../data/english';
+const popular = englishTools.slice(0, 6);
+---
+<BaseLayout language="en" title="Utilix — Free Online Tools" description="Free online tools for calculations, conversions, and working with text and data. Use them in your browser, with no installation or account required.">
+  <section class="hero"><div class="container hero-inner"><span class="eyebrow"><span class="eyebrow-dot"></span>FREE ONLINE TOOLS</span><h1>Free online tools.<br /><span>Simple. Fast. No account.</span></h1><p>Useful tools for work, study, and everyday life. No installation or extra steps.</p><label class="search-box"><span aria-hidden="true">⌕</span><input id="tool-search" type="search" placeholder="Find a tool..." autocomplete="off" /><kbd>Search</kbd></label><div id="search-results" class="tool-grid" hidden></div><p class="empty-state" id="no-results" hidden>No tools found. Try another search.</p><div class="hero-meta"><span>✦ Free</span><span>↗ In your browser</span><span>◉ No account</span></div></div></section>
+  <section class="section container" id="popular"><div class="section-heading"><div><span class="eyebrow">GET STARTED</span><h2>Popular tools</h2></div><a class="text-link" href="#all-tools">All tools ↗</a></div><div class="tool-grid" id="popular-tools-grid">{popular.map(tool => <ToolCard tool={tool} />)}</div></section>
+  <section class="section categories-section" id="categories"><div class="container"><div class="section-heading"><div><span class="eyebrow">LIBRARY</span><h2>Tool categories</h2></div></div><div class="category-grid">{englishCategories.map((category, i) => <a class="category-card" href={`/en/category/${category.slug}/`}><span class="category-number">0{i + 1}</span><h3>{category.title}</h3><p>{category.description}</p><span class="category-link">Browse category ↗</span></a>)}</div></div></section>
+  <section class="section container" id="all-tools"><div class="section-heading"><div><span class="eyebrow">FULL LIBRARY</span><h2>All tools</h2></div><span class="count-pill">{englishTools.length} tools</span></div><div class="tool-grid all-tools-grid">{englishTools.map(tool => <ToolCard tool={tool} />)}</div></section>
+  <script>
+    const input = document.querySelector<HTMLInputElement>('#tool-search');
+    const allToolsGrid = document.querySelector<HTMLElement>('.all-tools-grid');
+    const cards = allToolsGrid ? [...allToolsGrid.querySelectorAll<HTMLElement>('.tool-card')] : [];
+    const searchResults = document.querySelector<HTMLElement>('#search-results');
+    const noResults = document.querySelector<HTMLElement>('#no-results');
+    const sections = ['#popular', '#categories', '#all-tools'].map((selector) => document.querySelector<HTMLElement>(selector));
+    input?.addEventListener('input', () => {
+      const query = input.value.trim().toLocaleLowerCase('en');
+      if (!query) {
+        cards.forEach((card) => { card.hidden = false; allToolsGrid?.append(card); });
+        if (searchResults) searchResults.hidden = true;
+        if (noResults) noResults.hidden = true;
+        sections.forEach((section) => { if (section) section.hidden = false; });
+        return;
+      }
+      sections.forEach((section) => { if (section) section.hidden = true; });
+      if (searchResults) searchResults.hidden = false;
+      let matchCount = 0;
+      cards.forEach((card) => {
+        const matches = (card.dataset.search ?? card.innerText).toLocaleLowerCase('en').includes(query);
+        card.hidden = !matches;
+        if (matches) { matchCount++; searchResults?.append(card); } else allToolsGrid?.append(card);
+      });
+      if (noResults) noResults.hidden = matchCount > 0;
+    });
+  </script>
+</BaseLayout>

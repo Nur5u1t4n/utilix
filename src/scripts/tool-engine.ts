@@ -53,6 +53,35 @@ const button = (label = "Выполнить") =>
 const group = (html: string) => `<form class="tool-fields">${html}</form>`;
 function init(root: HTMLElement) {
   const id = root.dataset.tool || "";
+  const isEnglish = root.dataset.language === "en";
+  const translations: Record<string, string> = {
+    "Число": "Number", "Процент (%)": "Percentage (%)", "Исходная цена": "Original price", "Скидка (%)": "Discount (%)", "Себестоимость": "Cost", "Цена продажи": "Sale price", "Величина": "Measurement", "Длина": "Length", "Масса": "Mass", "Объём": "Volume", "Площадь": "Area", "Значение": "Value", "Метры": "Metres", "Километры": "Kilometres", "Сантиметры": "Centimetres", "Миллиметры": "Millimetres", "Температура": "Temperature", "Цельсий": "Celsius", "Фаренгейт": "Fahrenheit", "Кельвин": "Kelvin", "Целое число": "Integer", "Исходная система": "Source base", "Целевая система": "Target base", "Действие": "Action", "Форматировать": "Format", "Сжать": "Minify", "JSON": "JSON", "Текст": "Text", "CSV-текст": "CSV text", "Разделитель": "Delimiter", "Запятая": "Comma", "Точка с запятой": "Semicolon", "Табуляция": "Tab", "Список строк": "Lines", "Первый текст": "First text", "Второй текст": "Second text", "Кодировать в Base64": "Encode as Base64", "Декодировать из Base64": "Decode Base64", "Количество UUID": "Number of UUIDs", "Длина пароля": "Password length", "Строчные": "Lowercase", "Заглавные": "Uppercase", "Цифры": "Numbers", "Символы": "Symbols", "Текст или URL": "Text or URL", "Рассчитать": "Calculate", "Рассчитать скидку": "Calculate discount", "Конвертировать": "Convert", "Проверить и преобразовать": "Validate and convert", "Показать таблицу": "Show table", "Удалить дубликаты": "Remove duplicates", "Сравнить": "Compare", "Выполнить": "Run", "Сгенерировать": "Generate", "Создать пароль": "Generate password", "Начните вводить или вставьте текст...": "Type or paste text...", "Вставьте текст сюда...": "Paste text here...", "Каждое значение — с новой строки": "Enter one value per line", "Статистика обновляется автоматически.": "Statistics update automatically.", "Результат появится здесь": "Your result will appear here", "Копировать результат": "Copy result", "Скопировано ✓": "Copied ✓", "Заполните поле": "Please fill in", "должно содержать корректное число.": "must be a valid number.", "Выберите хотя бы один набор символов.": "Select at least one character set.", "Температура не может быть ниже абсолютного нуля.": "Temperature cannot be below absolute zero.", "Введите корректное число.": "Enter a valid number.", "Удалено повторов:": "Duplicates removed:", "Добавлено строк:": "Lines added:", "Удалено строк:": "Lines removed:", "Тексты полностью совпадают.": "The texts are identical.", "Символов": "Characters", "Слов": "Words", "Строк": "Lines", "Без пробелов": "Without spaces", "не определяется (цена продажи равна нулю)": "undefined (sale price is zero)", "Исходная цена:": "Original price:", "Скидка:": "Discount:", "Сумма скидки:": "Discount amount:", "Итоговая цена:": "Final price:", "Валовая прибыль:": "Gross profit:", "Наценка:": "Markup:", "Маржа:": "Margin:", "не удалось выполнить операцию.": "Could not complete the operation.", "Неизвестный режим Base64.": "Unknown Base64 mode.", "Неизвестный режим URL-кодирования.": "Unknown URL encoding mode.", "Выберите корректный разделитель CSV.": "Choose a valid CSV delimiter.", "Выберите режим обработки JSON.": "Choose a JSON processing mode.", "После закрывающей кавычки допускается только разделитель или перенос строки.": "Only a delimiter or line break may follow a closing quote.", "Обнаружена незакрытая кавычка в CSV.": "Unclosed quote found in CSV.", "Кавычка внутри некавыченного значения CSV. Проверьте формат данных.": "A quote appears inside an unquoted CSV value. Check the data format.", "Введите значение для преобразования.": "Enter a value to convert.", "Неизвестная категория единиц.": "Unknown unit category.", "Неизвестная или несовместимая единица измерения.": "Unknown or incompatible unit.", "Результат выходит за пределы допустимого диапазона.": "The result is outside the supported range.", "Введите целое число.": "Enter an integer.", "Основание должно быть от 2 до 36.": "Base must be between 2 and 36.", "Некорректный JSON:": "Invalid JSON:", "Добавьте CSV-текст.": "Add CSV text.", "Введите текст для обработки.": "Enter text to process.", "Некорректный формат Base64.": "Invalid Base64 format.", "Некорректное URL-кодирование.": "Invalid URL encoding.", "не удалось получить случайные данные.": "Could not generate secure random data.", "не удалось создать пароль.": "Could not generate a password.",  "Миллилитры": "Millilitres", "Литры": "Litres", "Граммы": "Grams", "Килограммы": "Kilograms", "Кубические метры": "Cubic metres", "Чайные ложки": "Teaspoons", "Столовые ложки": "Tablespoons", "Чашки": "Cups", "Галлоны": "Gallons", "Гектары": "Hectares", "Акры": "Acres", "Форматирование": "Formatting", "Основание": "Base", "Заполните поле «": "Please fill in “", "». ": "”. ", " — ": " — ", "Генерировать": "Generate", "Преобразование": "Conversion", "миля": "mile", "дюйм": "inch", "фут": "foot", "ярд": "yard", "унция": "ounce", "фунт": "pound", "ч. л.": "tsp", "ст. л.": "tbsp", "чашка": "cup", "галлон": "gallon", "миллиметры": "millimetres", "сантиметры": "centimetres", "метры": "metres", "километры": "kilometres", "миллиграммы": "milligrams", "граммы": "grams", "килограммы": "kilograms", "тонны": "tonnes", "унции": "ounces", "фунты": "pounds", "миллилитры": "millilitres", "литры": "litres", "квадратные миллиметры": "square millimetres", "квадратные сантиметры": "square centimetres", "квадратные метры": "square metres", "квадратные километры": "square kilometres", "процента": "percent of", "от": "of",  "Количество UUID должно быть целым числом.": "The number of UUIDs must be an integer.", "Длина пароля должна быть целым числом.": "Password length must be an integer.", "должна быть от": "must be from", "символов.": "characters.", "Количество UUID должно быть от": "The number of UUIDs must be from", "Длина пароля должна быть от": "Password length must be from", "Укажите": "Enter", "Выберите": "Choose", "Должно содержать": "Must contain", "не может быть отрицательной.": "cannot be negative.", "должна быть от 0 до 100%.": "must be between 0 and 100%.", "должна быть больше нуля.": "must be greater than zero.", "поля": "field", "Неизвестная единица температуры.": "Unknown temperature unit.",  "Невозможно преобразовать число.": "Could not convert the number.", "Введите корректный формат": "Enter a valid format", "основание": "base", "символ": "character", "Скопировать результат": "Copy result", "Вставьте": "Paste", "Нажмите": "Select"
+  };
+  Object.assign(translations, {
+    "Цена не может быть отрицательной.": "Price cannot be negative.",
+    "Скидка должна быть от 0 до 100%.": "Discount must be between 0 and 100%.",
+    "Себестоимость должна быть больше нуля.": "Cost must be greater than zero.",
+    "Цена продажи не может быть отрицательной.": "Sale price cannot be negative.",
+    "Введите корректное конечное число.": "Enter a valid finite number.",
+    "Введите текст для кодирования.": "Enter text to encode.",
+    "Введите Base64 для декодирования.": "Enter Base64 to decode.",
+    "Некорректная строка Base64.": "Invalid Base64 string.",
+    "Некорректные данные Base64 или UTF-8.": "Invalid Base64 or UTF-8 data.",
+    "Длина пароля меньше количества выбранных наборов.": "Password length is less than the number of selected character sets.",
+    "Система счисления должна иметь основание от 2 до 36.": "The base must be between 2 and 36.",
+    "Введите корректное целое число.": "Enter a valid integer.",
+    "Число содержит недопустимые символы.": "The number contains invalid characters.",
+    "Вставьте JSON для обработки.": "Paste JSON to process.",
+    "Некорректный JSON. Проверьте синтаксис и разделители.": "Invalid JSON. Check the syntax and separators.",
+    "Добавьте текст для удаления дубликатов.": "Add text to remove duplicates.",
+    "Введите корректное число.": "Enter a valid number.",
+    "Поле «": "Field “",
+    "» должно содержать корректное число.": "” must contain a valid number.",
+  });
+  const translate = (value: string) => {
+    if (!isEnglish) return value;
+    return Object.entries(translations).filter(([ru]) => ru.length > 4).sort(([a], [b]) => b.length - a.length).reduce((text, [ru, en]) => text.replaceAll(ru, en), value).replaceAll("Основание ", "Base ");
+  };
   const form = $("#tool-form", root)!;
   const output = $("#tool-output", root)!;
   const actions = $("#tool-actions", root)!;
@@ -61,12 +90,12 @@ function init(root: HTMLElement) {
   };
   const result = (value: string) => {
     set(`<pre class="result-text"></pre>`);
-    output.querySelector("pre")!.textContent = value;
-    actions.innerHTML = `<button class="secondary-button" id="copy-result" type="button">Копировать результат</button>`;
+    output.querySelector("pre")!.textContent = translate(value);
+    actions.innerHTML = `<button class="secondary-button" id="copy-result" type="button">${translate("Копировать результат")}</button>`;
     $("#copy-result", actions)?.addEventListener("click", async () => {
       await navigator.clipboard.writeText(value);
       const b = $("#copy-result", actions);
-      if (b) b.textContent = "Скопировано ✓";
+      if (b) b.textContent = translate("Скопировано ✓");
     });
   };
   const configs: Record<string, string> = {
@@ -247,7 +276,7 @@ function init(root: HTMLElement) {
         `<p class="live-hint">Статистика обновляется автоматически.</p>`,
     ),
   };
-  form.innerHTML = configs[id] || "<p>Инструмент пока не настроен.</p>";
+  form.innerHTML = translate(configs[id] || "<p>Инструмент пока не настроен.</p>");
   const f = form.querySelector("form")!;
   const unitSets: Record<string, [string, string][]> = {
     length: [
@@ -293,7 +322,7 @@ function init(root: HTMLElement) {
       for (const n of ["from", "to"]) {
         const el = f.querySelector<HTMLSelectElement>(`[name=${n}]`)!;
         el.innerHTML = opts
-          .map(([v, t]) => `<option value="${v}">${t}</option>`)
+          .map(([v, t]) => `<option value="${v}">${translate(t)}</option>`)
           .join("");
       }
     };
@@ -319,7 +348,7 @@ function init(root: HTMLElement) {
   };
 
   const fmt = (n: number) =>
-    new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 8 }).format(n);
+    new Intl.NumberFormat(isEnglish ? "en-US" : "ru-RU", { maximumFractionDigits: 8 }).format(n);
   const unitLabels: Record<string, string> = {
     mm: "мм",
     cm: "см",
@@ -352,6 +381,9 @@ function init(root: HTMLElement) {
     ha: "га",
     acre: "акр",
   };
+  if (isEnglish) {
+    for (const [key, label] of Object.entries(unitLabels)) unitLabels[key] = translate(label);
+  }
 
   const temperatureLabels: Record<string, string> = {
     c: "°C",
@@ -368,7 +400,7 @@ function init(root: HTMLElement) {
 
           const { value } = calculatePercentage(n, p);
 
-          result(`${fmt(p)}% от ${fmt(n)} = ${fmt(value)}`);
+          result(`${fmt(p)}% ${isEnglish ? "of" : "от"} ${fmt(n)} = ${fmt(value)}`);
           break;
         }
 
@@ -573,7 +605,7 @@ function init(root: HTMLElement) {
     } catch (e) {
       set(`<p class="error-message"></p>`);
       output.querySelector(".error-message")!.textContent =
-        e instanceof Error ? e.message : "Не удалось выполнить операцию.";
+        translate(e instanceof Error ? e.message : "Не удалось выполнить операцию.");
       actions.innerHTML = "";
     }
   };
